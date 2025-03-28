@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biometrikus Azonosítás</title>
+</head>
+<body>
+<h2>Biometrikus azonosítás</h2>
+<button onclick="biometrikusHitelesites()">Hitelesítés indítása</button>
+<p id="eredmeny"></p>
+<script>
+       async function biometrikusHitelesites() {
+           if (!window.PublicKeyCredential) {
+               document.getElementById("eredmeny").innerText = "A böngésző nem támogatja a WebAuthn API-t.";
+               return;
+           }
+           try {
+               const credential = await navigator.credentials.get({
+                   publicKey: {
+                       challenge: new Uint8Array(32),
+                       userVerification: "required"
+                   }
+               });
+               console.log("Hitelesítés sikeres:", credential);
+               document.getElementById("eredmeny").innerText = "Hitelesítés sikeres!";
+               // Küldés PowerApps felé
+               window.parent.postMessage("HITELTESITES_OK", "*");
+           } catch (error) {
+               console.error("Hiba történt:", error);
+               document.getElementById("eredmeny").innerText = "Hiba történt: " + error.message;
+           }
+       }
+</script>
+</body>
+</html>
